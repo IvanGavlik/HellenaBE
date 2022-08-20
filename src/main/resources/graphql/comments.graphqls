@@ -1,0 +1,237 @@
+type Comment {
+    """
+    Unique identifier
+    """
+    id: ID!
+
+    """
+    Content of the comment
+    """
+    content: String!
+
+    """
+    HTML Parsed content of the comment
+    """
+    contentHtml: String!
+
+    """
+    Time when comment was created
+    """
+    createdAt: DateTime!
+
+    """
+    Time when comment was last updated (edited)
+    """
+    lastUpdatedAt: DateTime
+
+    """
+    Permanent link to the comment
+    """
+    permalink: String!
+
+    """
+    Author of this comment
+    """
+    author: User!
+
+    """
+    Whether the user upvoted this comment
+    """
+    upvoted: Boolean
+
+    """
+    Sub comments of this comment
+    """
+    children: CommentConnection
+
+    """
+    The post that was commented
+    """
+    post: Post!
+
+    """
+    Total number of upvotes
+    """
+    numUpvotes: Int!
+}
+
+type CommentEdge {
+    node: Comment!
+
+    """
+    Used in `before` and `after` args
+    """
+    cursor: String!
+}
+
+type CommentConnection {
+    pageInfo: PageInfo!
+    edges: [CommentEdge!]!
+}
+
+type CommentUpvote {
+    createdAt: DateTime!
+
+    user: User!
+    comment: Comment!
+}
+
+type CommentUpvoteEdge {
+    node: CommentUpvote!
+
+    """
+    Used in `before` and `after` args
+    """
+    cursor: String!
+}
+
+type CommentUpvoteConnection {
+    pageInfo: PageInfo!
+    edges: [CommentUpvoteEdge!]!
+}
+
+extend type Query {
+    """
+    Get the comments of a post
+    """
+    postComments(
+        """
+        Post id
+        """
+        postId: ID!
+
+        """
+        Paginate after opaque cursor
+        """
+        after: String
+
+        """
+        Paginate first
+        """
+        first: Int
+    ): CommentConnection!
+
+    """
+    Get Comment's Upvotes by post id
+    """
+    commentUpvotes(
+        """
+        Id of the relevant comment to return Upvotes
+        """
+        id: String!
+        """
+        Paginate after opaque cursor
+        """
+        after: String
+
+        """
+        Paginate first
+        """
+        first: Int
+    ): CommentUpvoteConnection!
+
+    """
+    Get the comments of a user
+    """
+    userComments(
+        """
+        User id (author)
+        """
+        userId: ID!
+
+        """
+        Paginate after opaque cursor
+        """
+        after: String
+
+        """
+        Paginate first
+        """
+        first: Int
+    ): CommentConnection!
+
+    """
+    Recommend users to mention in the comments
+    """
+    recommendedMentions(postId: String!, query: String, limit: Int): [User]
+    @auth
+
+    """
+    Markdown equivalent of the user's comment
+    """
+    commentPreview(content: String!): String @auth
+}
+
+extend type Mutation {
+    """
+    Comment on a post
+    """
+    commentOnPost(
+        """
+        Id of the post
+        """
+        postId: ID!
+        """
+        Content of the comment
+        """
+        content: String!
+    ): Comment @auth
+
+    """
+    Comment on a comment
+    """
+    commentOnComment(
+        """
+        Id of the comment
+        """
+        commentId: ID!
+        """
+        Content of the comment
+        """
+        content: String!
+    ): Comment @auth
+
+    """
+    Edit comment
+    """
+    editComment(
+        """
+        Id of the comment to edit
+        """
+        id: ID!
+        """
+        New content of the comment
+        """
+        content: String!
+    ): Comment @auth
+
+    """
+    Delete a comment
+    """
+    deleteComment(
+        """
+        Id of the comment
+        """
+        id: ID!
+    ): EmptyResponse @auth
+
+    """
+    Upvote to a comment
+    """
+    upvoteComment(
+        """
+        Id of the comment to upvote
+        """
+        id: ID!
+    ): EmptyResponse @auth
+
+    """
+    Cancel an upvote of a comment
+    """
+    cancelCommentUpvote(
+        """
+        Id of the comment
+        """
+        id: ID!
+    ): EmptyResponse @auth
+}

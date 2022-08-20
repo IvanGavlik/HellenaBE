@@ -1,0 +1,91 @@
+"""
+Source to discover posts from (usually blogs)
+"""
+type Source {
+    """
+    Short unique string to identify the source
+    """
+    id: ID!
+
+    """
+    Name of the source
+    """
+    name: String!
+
+    """
+    URL to a thumbnail image of the source
+    """
+    image: String!
+
+    """
+    Whether the source is public
+    """
+    public: Boolean
+}
+
+type SourceConnection {
+    pageInfo: PageInfo!
+    edges: [SourceEdge!]!
+}
+
+type SourceEdge {
+    node: Source!
+
+    """
+    Used in `before` and `after` args
+    """
+    cursor: String!
+}
+
+input AddPrivateSourceInput {
+    """
+    RSS feed url
+    """
+    rss: String!
+    """
+    Name of the new source
+    """
+    name: String!
+    """
+    Thumbnail image of the source logo
+    """
+    image: String!
+    """
+    Url to the landing page of the source
+    """
+    website: String
+}
+
+extend type Query {
+    """
+    Get all available sources
+    """
+    sources(
+        """
+        Paginate after opaque cursor
+        """
+        after: String
+
+        """
+        Paginate first
+        """
+        first: Int
+    ): SourceConnection!
+
+    """
+    Get the source that matches the feed
+    """
+    sourceByFeed(feed: String!): Source @auth
+
+    """
+    Get source by ID
+    """
+    source(id: ID!): Source
+}
+
+extend type Mutation {
+    """
+    Add a new private source
+    """
+    addPrivateSource(data: AddPrivateSourceInput!): Source! @auth(premium: true)
+}

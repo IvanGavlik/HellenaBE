@@ -1,0 +1,193 @@
+"""
+User personal preferences
+"""
+type Settings {
+    """
+    Id of the user who requested this source
+    """
+    userId: ID!
+
+    """
+    Preferred theme
+    """
+    theme: String!
+
+    """
+    Whether to enable card animations
+    """
+    enableCardAnimations: Boolean!
+
+    """
+    Whether to show top sites for quick navigation
+    """
+    showTopSites: Boolean!
+
+    """
+    Whether to enable insane mode
+    """
+    insaneMode: Boolean!
+
+    """
+    Whether to enable insane mode for Daily Go
+    """
+    appInsaneMode: Boolean!
+
+    """
+    Spaciness level for the layout
+    """
+    spaciness: String!
+
+    """
+    Whether to show unread posts only
+    """
+    showOnlyUnreadPosts: Boolean!
+
+    """
+    Whether to open articles on new tab
+    """
+    openNewTab: Boolean!
+
+    """
+    Whether to show the sidebar in expanded form
+    """
+    sidebarExpanded: Boolean!
+
+    """
+    Whether to show the companion in expanded form
+    """
+    companionExpanded: Boolean
+
+    """
+    Whether to allow sorting of the feeds
+    """
+    sortingEnabled: Boolean!
+
+    """
+    Custom links that the user has defined for their extension shortcut links
+    """
+    customLinks: [String]
+
+    """
+    Whether the user opted out from the weekly goal
+    """
+    optOutWeeklyGoal: Boolean!
+
+    """
+    Whether the user opted out from the companion app
+    """
+    optOutCompanion: Boolean!
+
+    """
+    Whether to automatically dismiss notifications
+    """
+    autoDismissNotifications: Boolean!
+
+    """
+    Time of last update
+    """
+    updatedAt: DateTime!
+}
+
+type BookmarksSharing {
+    enabled: Boolean!
+    slug: String
+    rssUrl: String
+}
+
+input UpdateSettingsInput {
+    """
+    Preferred theme
+    """
+    theme: String
+
+    """
+    Whether to enable card animations
+    """
+    enableCardAnimations: Boolean
+
+    """
+    Whether to show top sites for quick navigation
+    """
+    showTopSites: Boolean
+
+    """
+    Whether to enable insane mode
+    """
+    insaneMode: Boolean
+
+    """
+    Whether to enable insane mode for Daily Go
+    """
+    appInsaneMode: Boolean
+
+    """
+    Spaciness level for the layout
+    """
+    spaciness: String
+
+    """
+    Whether to show unread posts only
+    """
+    showOnlyUnreadPosts: Boolean
+
+    """
+    Whether to open articles on new tab
+    """
+    openNewTab: Boolean
+
+    """
+    Whether to show the sidebar in expanded form
+    """
+    sidebarExpanded: Boolean
+
+    """
+    Whether to show the companion in expanded form
+    """
+    companionExpanded: Boolean
+
+    """
+    Whether to allow sorting of the feeds
+    """
+    sortingEnabled: Boolean
+
+    """
+    Custom links that the user has defined for their extension shortcut links
+    """
+    customLinks: [String]
+
+    """
+    Whether the user opted out from the weekly goal
+    """
+    optOutWeeklyGoal: Boolean
+
+    """
+    Whether the user opted out from the companion app
+    """
+    optOutCompanion: Boolean
+
+    """
+    Whether to automatically dismiss notifications
+    """
+    autoDismissNotifications: Boolean
+}
+
+extend type Mutation {
+    """
+    Update the user settings
+    """
+    updateUserSettings(data: UpdateSettingsInput!): Settings! @auth
+
+    """
+    Enable/disable the bookmarks sharing
+    """
+    setBookmarksSharing(enabled: Boolean!): BookmarksSharing @auth
+}
+
+extend type Query {
+    """
+    Get the user settings
+    """
+    userSettings: Settings! @auth
+
+    bookmarksSharing: BookmarksSharing @auth
+}

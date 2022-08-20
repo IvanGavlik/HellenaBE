@@ -1,0 +1,16 @@
+"""
+Integration tutorials and walkthroughs
+"""
+type Integration {
+    logo: String!
+    title: String!
+    subtitle: String!
+    url: String!
+}
+
+extend type Query {
+    """
+    Get the most popular integrations
+    """
+    popularIntegrations: [Integration!]! @cacheControl(maxAge: 600)
+}

@@ -1,0 +1,65 @@
+"""
+Alerts to display to the relevant user
+"""
+type Alerts {
+"""
+Status to display for filter red dot
+"""
+filter: Boolean!
+
+"""
+Date last seen of the rank achievement popup
+"""
+rankLastSeen: DateTime
+
+"""
+Wether to show the my feed alert (migrated/created/null)
+migrated: The user has existing filters so we created myFeed for them
+created: The user applied filters himself
+null: The user clicked to not show the alert anymore
+"""
+myFeed: String
+
+"""
+Wether to show the companion helper
+Default = true, meaning yes show it
+Once the user has seen it once, we set this value to false
+"""
+companionHelper: Boolean!
+}
+
+input UpdateAlertsInput {
+"""
+Status to display for filter red dot
+"""
+filter: Boolean
+
+"""
+Date last seen of the rank achievement popup
+"""
+rankLastSeen: DateTime
+
+"""
+Status for the My Feed alert
+"""
+myFeed: String
+
+"""
+Status to display for companion helper
+"""
+companionHelper: Boolean
+}
+
+extend type Mutation {
+"""
+Update the alerts for user
+"""
+updateUserAlerts(data: UpdateAlertsInput!): Alerts! @auth
+}
+
+extend type Query {
+"""
+Get the alerts for user
+"""
+userAlerts: Alerts!
+}

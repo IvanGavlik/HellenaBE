@@ -1,0 +1,32 @@
+"""
+Post tag
+"""
+type Tag {
+    """
+    The actual text of the tag
+    """
+    name: String!
+}
+
+"""
+Tag search results
+"""
+type TagSearchResults {
+    """
+    Query that was searched
+    """
+    query: String!
+    """
+    Search results
+    """
+    hits: [Tag]!
+}
+
+extend type Query {
+    """
+    Get the most popular tags
+    """
+    popularTags: [Tag] @cacheControl(maxAge: 600)
+
+    searchTags(query: String!): TagSearchResults @cacheControl(maxAge: 600)
+}

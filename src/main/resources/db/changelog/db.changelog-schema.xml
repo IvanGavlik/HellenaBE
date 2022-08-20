@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="01" author="igavlik">
+        <createTable tableName="providers">
+            <column name="user_id" type="varchar(255)" >
+                <constraints nullable="false" unique="true"></constraints>
+            </column>
+            <column name="provider" type="varchar(255)">
+                <constraints nullable="false" unique="true" ></constraints>
+            </column>
+            <column name="provider_id" type="varchar(255)">
+                <constraints nullable="false" unique="true" ></constraints>
+            </column>
+            <column name="access_token" type="varchar(255)">
+                <constraints nullable="false" unique="true" ></constraints>
+            </column>
+            <column name="created_at" type="datetime">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="updated_at" type="datetime">
+                <constraints nullable="false" ></constraints>
+            </column>
+            <column name="expires_in" type="datetime">
+                <constraints nullable="true" ></constraints>
+            </column>
+            <column name="refresh_token" type="varchar(255)">
+                <constraints nullable="true"></constraints>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="02" author="igavlik">
+        <createTable tableName="refresh_tokens">
+            <column name="token" type="varchar(255)" >
+                <constraints primaryKey="true" ></constraints>
+            </column>
+            <column name="user_id" type="varchar(255)" >
+                <constraints nullable="false" ></constraints>
+            </column>
+            <column name="created_at" type="datetime" >
+                <constraints nullable="true" ></constraints>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="03" author="igavlik">
+        <createTable tableName="roles">
+            <column name="user_id" type="varchar(255)"  >
+                <constraints nullable="false" unique="true" ></constraints>
+            </column>
+            <column name="role" type="varchar(255)" >
+                <constraints nullable="false" unique="true" ></constraints>
+            </column>
+        </createTable>
+        <createIndex tableName="roles" indexName="roles_role_user_id">
+            <column name="user_id"></column>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="04" author="igavlik">
+        <createTable tableName="users">
+            <column name="id" type="varchar(255)" >
+                <constraints primaryKey="true" ></constraints>
+            </column>
+            <column name="name" type="varchar(255)"></column>
+            <column name="email" type="varchar(255)"></column>
+            <column name="image" type="varchar(255)"></column>
+            <column name="created_at" type="datetime" ></column>
+            <column name="updated_at" type="datetime" ></column>
+            <column name="company" type="varchar(255)"></column>
+            <column name="title" type="varchar(255)"></column>
+            <column name="info_confirmed" type="boolean"></column>
+            <column name="premium" type="boolean"></column>
+            <column name="referral" type="varchar(255)">
+                <constraints nullable="true" ></constraints>
+            </column>
+            <column name="accepted_marketing" type="boolean"></column>
+            <column name="reputation" type="int"></column>
+            <column name="username" type="varchar(15)">
+                <constraints unique="true" nullable="true" ></constraints>
+            </column>
+            <column name="bio" type="varchar(255)">
+                <constraints unique="true" nullable="true" ></constraints>
+            </column>
+            <column name="twitter" type="varchar(15)">
+                <constraints unique="true" nullable="true" ></constraints>
+            </column>
+            <column name="github" type="varchar(50)">
+                <constraints unique="true" nullable="true" ></constraints>
+            </column>
+            <column name="portfolio" type="varchar(255)">
+                <constraints nullable="true" ></constraints>
+            </column>
+            <column name="hashnode" type="varchar(50)">
+                <constraints unique="true" nullable="true" ></constraints>
+            </column>
+            <column name="timezone" type="varchar(255)"></column>
+        </createTable>
+        <createIndex tableName="users" indexName="users_email">
+            <column name="id"></column>
+        </createIndex>
+        <createIndex tableName="users" indexName="users_referral">
+            <column name="referral"></column>
+        </createIndex>
+        <createIndex tableName="users" indexName="users_username">
+            <column name="username"></column>
+        </createIndex>
+        <createIndex tableName="users" indexName="users_twitter">
+            <column name="twitter"></column>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="05" author="igavlik">
+        <createTable tableName="visits">
+            <column name="user_id" type="varchar(255)"></column>
+            <column name="app"  type="varchar(255)">
+                <constraints primaryKey="true" ></constraints>
+            </column>
+            <column name="visited_at" type="datetime"></column>
+            <column name="first_visit" type="datetime"></column>
+            <column name="referral" type="datetime">
+                <constraints nullable="true" ></constraints>
+            </column>
+            <column name="ip" type="varchar(255)">
+                <constraints nullable="true" ></constraints>
+            </column>
+        </createTable>
+        <createIndex tableName="visits" indexName="visits_referral">
+            <column name="referral"></column>
+        </createIndex>
+        <createIndex tableName="visits" indexName="visits_first_visit">
+            <column name="first_visit"></column>
+        </createIndex>
+        <createIndex tableName="visits" indexName="visits_user_id">
+            <column name="user_id"></column>
+        </createIndex>
+        <createIndex tableName="visits" indexName="visits_app">
+            <column name="app"></column>
+        </createIndex>
+        <createIndex tableName="visits" indexName="visits_ip">
+            <column name="ip"></column>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="06" author="igavlik">
+        <createTable tableName="referral_contests">
+            <column name="start_at" type="datetime" >
+                <constraints primaryKey="true" ></constraints>
+            </column>
+            <column name="end_at" type="datetime" > </column>
+        </createTable>
+        <createIndex tableName="referral_contests" indexName="referral_contests_end_at">
+            <column name="end_at"></column>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="07" author="igavlik">
+        <dropColumn tableName="providers" columnName="access_token" ></dropColumn>
+        <dropColumn tableName="providers" columnName="updated_at" ></dropColumn>
+        <dropColumn tableName="providers" columnName="expires_in" ></dropColumn>
+        <dropColumn tableName="providers" columnName="refresh_token" ></dropColumn>
+
+        <dropTable schemaName="public"
+                    tableName="refresh_tokens"/>
+    </changeSet>
+
+    <changeSet id="08" author="igavlik">
+        <dropPrimaryKey tableName="referral_contests" ></dropPrimaryKey>
+        <addColumn tableName="referral_contests">
+            <column name="id" type="varchar(255)" >
+                <constraints primaryKey="true" ></constraints>
+            </column>
+        </addColumn>
+        <createTable tableName="referral_participants">
+            <column name="contest_id"  type="varchar(255)" >
+                <constraints primaryKey="true" ></constraints>
+            </column>
+            <column name="user_id" type="varchar(255)" ></column>
+            <column name="referrals" type="int" >
+                <constraints nullable="false" ></constraints>
+            </column>
+            <column name="eligible" type="boolean" ></column>
+        </createTable>
+        <createIndex tableName="referral_participants" indexName="referral_participants_contest_id">
+            <column name="contest_id"  type="varchar(255)" ></column>
+        </createIndex>
+        <createIndex tableName="referral_participants" indexName="referral_participants_user_id">
+            <column name="user_id"  type="varchar(255)" ></column>
+        </createIndex>
+        <createIndex tableName="referral_participants" indexName="referral_participants_referrals">
+            <column name="referrals"></column>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="09" author="igavlik">
+        <createTable tableName="refresh_tokens">
+            <column name="token" type="varchar(255)" >
+                <constraints primaryKey="true" ></constraints>
+            </column>
+            <column name="user_id" type="varchar(255)" >
+                <constraints nullable="false" ></constraints>
+            </column>
+            <column name="created_at" type="datetime" >
+                <constraints nullable="true" ></constraints>
+            </column>
+        </createTable>
+    </changeSet>
+
+
+</databaseChangeLog>

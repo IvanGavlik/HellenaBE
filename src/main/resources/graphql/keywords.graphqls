@@ -1,0 +1,69 @@
+"""
+Post keyword
+"""
+type Keyword {
+    """
+    The keyword itself
+    """
+    value: String!
+    """
+    Status of the keyword ('pending' | 'allow' | 'deny' | 'synonym')
+    """
+    status: String!
+    """
+    Number of posts containing this keyword
+    """
+    occurrences: Int!
+}
+
+"""
+Keyword search results
+"""
+type KeywordSearchResults {
+    """
+    Query that was searched
+    """
+    query: String!
+    """
+    Search results
+    """
+    hits: [Keyword]!
+}
+
+extend type Query {
+    """
+    Get a random pending keyword
+    """
+    randomPendingKeyword: Keyword @auth(requires: [MODERATOR])
+    """
+    Count the number of pending keywords
+    """
+    countPendingKeywords: Int @auth(requires: [MODERATOR])
+    """
+    Search in the allowed keywords list
+    """
+    searchKeywords(query: String!): KeywordSearchResults
+    @auth(requires: [MODERATOR])
+    """
+    Get a keyword
+    """
+    keyword(value: String!): Keyword @auth(requires: [MODERATOR])
+}
+
+extend type Mutation {
+    """
+    Add keyword to the allowlist
+    """
+    allowKeyword(keyword: String!): EmptyResponse @auth(requires: [MODERATOR])
+    """
+    Add keyword to the denylist
+    """
+    denyKeyword(keyword: String!): EmptyResponse @auth(requires: [MODERATOR])
+    """
+    Set a keyword as a synonym of another keyword
+    """
+    setKeywordAsSynonym(
+        keywordToUpdate: String!
+        originalKeyword: String!
+    ): EmptyResponse @auth(requires: [MODERATOR])
+}

@@ -1,0 +1,394 @@
+type TocItem {
+    """
+    Content of the toc item
+    """
+    text: String!
+
+    """
+    Id attribute of the Html element of the toc item
+    """
+    id: String
+
+    """
+    Children items of the toc item
+    """
+    children: [TocItem]
+}
+
+"""
+Post notification
+"""
+type PostNotification {
+    """
+    Unique identifier
+    """
+    id: ID!
+
+    """
+    Total number of upvotes
+    """
+    numUpvotes: Int!
+
+    """
+    Total number of comments
+    """
+    numComments: Int!
+}
+
+"""
+Blog post
+"""
+type Post {
+    """
+    Unique identifier
+    """
+    id: ID!
+
+    """
+    Unique URL friendly short identifier
+    """
+    shortId: String
+
+    """
+    Time the post was published
+    """
+    publishedAt: DateTime
+
+    """
+    Time the post was added to the database
+    """
+    createdAt: DateTime!
+
+    """
+    URL to the post
+    """
+    url: String!
+
+    """
+    Title of the post
+    """
+    title: String!
+
+    """
+    URL to the image of post
+    """
+    image: String
+
+    """
+    Aspect ratio of the image
+    """
+    ratio: Float
+
+    """
+    Tiny version of the image in base64
+    """
+    placeholder: String
+
+    """
+    Estimation of time to read the article (in minutes)
+    """
+    readTime: Float
+
+    """
+    Source of the post
+    """
+    source: Source!
+
+    """
+    Tags of the post
+    """
+    tags: [String!]
+
+    """
+    Whether the user has read this post
+    """
+    read: Boolean
+
+    """
+    Whether the user bookmarked this post
+    """
+    bookmarked: Boolean
+
+    """
+    Whether the user upvoted this post
+    """
+    upvoted: Boolean
+
+    """
+    Whether the user commented this post
+    """
+    commented: Boolean
+
+    """
+    If bookmarked, this is the list where it is saved
+    """
+    bookmarkList: BookmarkList
+
+    """
+    Permanent link to the post
+    """
+    permalink: String!
+
+    """
+    Total number of upvotes
+    """
+    numUpvotes: Int!
+
+    """
+    Total number of comments
+    """
+    numComments: Int!
+
+    """
+    Permanent link to the comments of the post
+    """
+    commentsPermalink: String!
+
+    """
+    Featured comments for the post
+    """
+    featuredComments: [Comment!]
+
+    """
+    Author of the post (if they have a daily.dev account)
+    """
+    author: User
+
+    """
+    Scout of the post who suggested the link (if they have a daily.dev account)
+    """
+    scout: User
+
+    """
+    Number of times the article has been viewed (unique readers)
+    """
+    views: Int
+
+    """
+    Trending score of the post
+    """
+    trending: Int
+
+    """
+    Meta description of the post
+    """
+    description: String
+
+    """
+    Table of content of the post
+    """
+    toc: [TocItem]
+
+    """
+    Auto generated summary
+    """
+    summary: String
+
+    """
+    Whether the user is the author
+    """
+    isAuthor: Int
+
+    """
+    Whether the user is the scout
+    """
+    isScout: Int
+}
+
+type PostConnection {
+    pageInfo: PageInfo!
+    edges: [PostEdge!]!
+    """
+    The original query in case of a search operation
+    """
+    query: String
+}
+
+type PostEdge {
+    node: Post!
+
+    """
+    Used in `before` and `after` args
+    """
+    cursor: String!
+}
+
+type Upvote {
+    createdAt: DateTime!
+
+    user: User!
+    post: Post!
+}
+
+type UpvoteEdge {
+    node: Upvote!
+
+    """
+    Used in `before` and `after` args
+    """
+    cursor: String!
+}
+
+type UpvoteConnection {
+    pageInfo: PageInfo!
+    edges: [UpvoteEdge!]!
+    """
+    The original query in case of a search operation
+    """
+    query: String
+}
+
+"""
+Enum of the possible reasons to report a post
+"""
+enum ReportReason {
+    """
+    The post's link is broken
+    """
+    BROKEN
+    """
+    The post is a clickbait
+    """
+    CLICKBAIT
+    """
+    The post has low quality content
+    """
+    LOW
+    """
+    The post is not safe for work (NSFW), for any reason
+    """
+    NSFW
+    """
+    Reason doesnt fit any specific category
+    """
+    OTHER
+}
+
+extend type Query {
+    """
+    Get post by id
+    """
+    post(
+        """
+        Id of the requested post
+        """
+        id: ID
+    ): Post!
+
+    """
+    Get post by URL
+    """
+    postByUrl(
+        """
+        URL of the requested post
+        """
+        url: String
+    ): Post!
+
+    """
+    Get Post's Upvotes by post id
+    """
+    postUpvotes(
+        """
+        Id of the relevant post to return Upvotes
+        """
+        id: String!
+
+        """
+        Paginate after opaque cursor
+        """
+        after: String
+
+        """
+        Paginate first
+        """
+        first: Int
+    ): UpvoteConnection!
+}
+
+extend type Mutation {
+    """
+    Hide a post from all the user feeds
+    """
+    hidePost(
+        """
+        Id of the post to hide
+        """
+        id: ID
+    ): EmptyResponse @auth
+
+    """
+    Unhide a post from all the user feeds
+    """
+    unhidePost(
+        """
+        Id of the post to hide
+        """
+        id: ID
+    ): EmptyResponse @auth
+
+    """
+    Report a post and hide it from all the user feeds
+    """
+    reportPost(
+        """
+        Id of the post to report
+        """
+        id: ID
+        """
+        Reason the user would like to report
+        """
+        reason: ReportReason
+        """
+        Additional comment about report reason
+        """
+        comment: String
+    ): EmptyResponse @auth
+
+    """
+    Delete a post permanently
+    """
+    deletePost(
+        """
+        Id of the post to delete
+        """
+        id: ID
+    ): EmptyResponse @auth(requires: [MODERATOR])
+
+    """
+    Bans a post (can be undone)
+    """
+    banPost(
+        """
+        Id of the post to ban
+        """
+        id: ID
+    ): EmptyResponse @auth(requires: [MODERATOR])
+
+    """
+    Upvote to the post
+    """
+    upvote(
+        """
+        Id of the post to upvote
+        """
+        id: ID!
+    ): EmptyResponse @auth
+
+    """
+    Cancel an upvote of a post
+    """
+    cancelUpvote(
+        """
+        Id of the post
+        """
+        id: ID!
+    ): EmptyResponse @auth
+}
+
+type Subscription {
+    """
+    Get notified when one of the given posts is upvoted or comments
+    """
+    postsEngaged: PostNotification
+}

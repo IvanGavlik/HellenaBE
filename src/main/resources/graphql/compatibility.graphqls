@@ -1,0 +1,64 @@
+type Publication {
+    id: ID!
+    name: String!
+    image: String!
+}
+
+type PostSearchResults {
+    query: String
+    hits: [Post]
+}
+
+input QueryPostInput {
+    latest: String
+    page: Int
+    pageSize: Int
+    pubs: String
+    tags: String
+    sortBy: String
+    read: Boolean
+}
+
+input PostByPublicationInput {
+    latest: String
+    page: Int
+    pageSize: Int
+    pub: String!
+}
+
+input PostByTagInput {
+    latest: String
+    page: Int
+    pageSize: Int
+    tag: String!
+}
+
+input PostSearchInput {
+    latest: String
+    page: Int
+    pageSize: Int
+    query: String!
+}
+
+input PostSearchSuggestionInput {
+    query: String!
+}
+
+extend type Post {
+    """
+    Publication of the post
+    """
+    publication: Publication! @deprecated(reason: "Please use source instead")
+}
+
+extend type Query {
+    latest(params: QueryPostInput): [Post!]!
+    @deprecated(reason: "Please use anonymousFeed or feed")
+    bookmarks(params: QueryPostInput): [Post!]!
+    @auth
+    @deprecated(reason: "Please use bookmarksFeed")
+    postsByPublication(params: PostByPublicationInput): [Post!]!
+    @deprecated(reason: "Please use sourceFeed")
+    postsByTag(params: PostByTagInput): [Post!]!
+    @deprecated(reason: "Please use tagFeed")
+}

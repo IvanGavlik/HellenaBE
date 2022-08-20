@@ -1,0 +1,455 @@
+type AdvancedSettings {
+    id: Int!
+    title: String!
+    description: String!
+    defaultEnabledState: Boolean!
+}
+
+type FeedAdvancedSettings {
+    id: Int!
+    enabled: Boolean!
+}
+
+type FeedSettings {
+    id: String
+    userId: String
+    includeTags: [String]
+    blockedTags: [String]
+    excludeSources: [Source]
+    advancedSettings: [FeedAdvancedSettings]
+}
+
+type SearchPostSuggestion {
+    title: String!
+}
+
+type SearchPostSuggestionsResults {
+    query: String!
+    hits: [SearchPostSuggestion!]!
+}
+
+type RSSFeed {
+    name: String!
+    url: String!
+}
+
+type TagsCategory {
+    id: String!
+    emoji: String
+    title: String!
+    tags: [String]!
+}
+
+enum Ranking {
+    """
+    Rank by a combination of time and views
+    """
+    POPULARITY
+    """
+    Rank by time only
+    """
+    TIME
+}
+
+input FeedAdvancedSettingsInput {
+    """
+    Advanced Settings ID
+    """
+    id: Int!
+
+    """
+    State if the sources related to advanced settings will be included/excluded
+    """
+    enabled: Boolean!
+}
+
+input FiltersInput {
+    """
+    Include posts of these sources
+    """
+    includeSources: [ID!]
+
+    """
+    Exclude posts of these sources
+    """
+    excludeSources: [ID!]
+
+    """
+    Posts must include at least one tag from this list
+    """
+    includeTags: [String!]
+
+    """
+    Posts must not include even one tag from this list
+    """
+    blockedTags: [String!]
+}
+
+extend type Query {
+    """
+    Get an ad-hoc feed based on sources and tags filters
+    """
+    anonymousFeed(
+        """
+        Time the pagination started to ignore new items
+        """
+        now: DateTime
+
+        """
+        Paginate after opaque cursor
+        """
+        after: String
+
+        """
+        Paginate first
+        """
+        first: Int
+
+        """
+        Ranking criteria for the feed
+        """
+        ranking: Ranking = POPULARITY
+
+        """
+        Filters to apply to the feed
+        """
+        filters: FiltersInput
+
+        """
+        Version of the feed algorithm
+        """
+        version: Int = 1
+    ): PostConnection!
+
+    """
+    Get a configured feed
+    """
+    feed(
+        """
+        Time the pagination started to ignore new items
+        """
+        now: DateTime
+
+        """
+        Paginate after opaque cursor
+        """
+        after: String
+
+        """
+        Paginate first
+        """
+        first: Int
+
+        """
+        Ranking criteria for the feed
+        """
+        ranking: Ranking = POPULARITY
+
+        """
+        Return only unread posts
+        """
+        unreadOnly: Boolean = false
+
+        """
+        Version of the feed algorithm
+        """
+        version: Int = 1
+    ): PostConnection! @auth
+
+    """
+    Get a single source feed
+    """
+    sourceFeed(
+        """
+        Id of the source
+        """
+        source: ID!
+
+        """
+        Time the pagination started to ignore new items
+        """
+        now: DateTime
+
+        """
+        Paginate after opaque cursor
+        """
+        after: String
+
+        """
+        Paginate first
+        """
+        first: Int
+
+        """
+        Ranking criteria for the feed
+        """
+        ranking: Ranking = POPULARITY
+    ): PostConnection!
+
+    """
+    Get a single tag feed
+    """
+    tagFeed(
+        """
+        The tag to fetch
+        """
+        tag: String!
+
+        """
+        Time the pagination started to ignore new items
+        """
+        now: DateTime
+
+        """
+        Paginate after opaque cursor
+        """
+        after: String
+
+        """
+        Paginate first
+        """
+        first: Int
+
+        """
+        Ranking criteria for the feed
+        """
+        ranking: Ranking = POPULARITY
+    ): PostConnection!
+
+    """
+    Get a single keyword feed
+    """
+    keywordFeed(
+        """
+        The keyword to fetch
+        """
+        keyword: String!
+
+        """
+        Paginate after opaque cursor
+        """
+        after: String
+
+        """
+        Paginate first
+        """
+        first: Int
+
+        """
+        Ranking criteria for the feed
+        """
+        ranking: Ranking = POPULARITY
+    ): PostConnection!
+
+    """
+    Get the user's default feed settings
+    """
+    feedSettings: FeedSettings! @auth
+
+    """
+    Get suggestions for search post query
+    """
+    searchPostSuggestions(
+        """
+        The query to search for
+        """
+        query: String!
+    ): SearchPostSuggestionsResults!
+
+    """
+    Get a posts feed of a search query
+    """
+    searchPosts(
+        """
+        The query to search for
+        """
+        query: String!
+
+        """
+        Time the pagination started to ignore new items
+        """
+        now: DateTime
+
+        """
+        Paginate after opaque cursor
+        """
+        after: String
+
+        """
+        Paginate first
+        """
+        first: Int
+    ): PostConnection!
+
+    """
+    Returns the user's RSS feeds
+    """
+    rssFeeds: [RSSFeed!]! @auth
+
+    """
+    Get a single author feed
+    """
+    authorFeed(
+        """
+        Id of the author
+        """
+        author: ID!
+
+        """
+        Paginate after opaque cursor
+        """
+        after: String
+
+        """
+        Paginate first
+        """
+        first: Int
+
+        """
+        Ranking criteria for the feed
+        """
+        ranking: Ranking = POPULARITY
+    ): PostConnection!
+
+    """
+    Get the most upvoted articles in the past 7 days feed
+    """
+    mostUpvotedFeed(
+        """
+        Paginate after opaque cursor
+        """
+        after: String
+
+        """
+        Paginate first
+        """
+        first: Int
+
+        """
+        Number of days since publication
+        """
+        period: Int
+    ): PostConnection!
+
+    """
+    Get the most discussed articles
+    """
+    mostDiscussedFeed(
+        """
+        Paginate after opaque cursor
+        """
+        after: String
+
+        """
+        Paginate first
+        """
+        first: Int
+    ): PostConnection!
+
+    """
+    Get random trending posts
+    """
+    randomTrendingPosts(
+        """
+        Post ID to filter out
+        """
+        post: ID
+
+        """
+        Paginate first
+        """
+        first: Int
+    ): [Post]!
+
+    """
+    Get random similar posts to a given post
+    """
+    randomSimilarPosts(
+        """
+        Post ID
+        """
+        post: ID!
+
+        """
+        Paginate first
+        """
+        first: Int
+    ): [Post]!
+
+    """
+    Get random similar posts by tags
+    """
+    randomSimilarPostsByTags(
+        """
+        Array of tags
+        """
+        tags: [String]!
+
+        """
+        Post ID
+        """
+        post: ID
+
+        """
+        Paginate first
+        """
+        first: Int
+    ): [Post]!
+
+    """
+    Get random best discussion posts
+    """
+    randomDiscussedPosts(
+        """
+        Post ID to filter out
+        """
+        post: ID
+
+        """
+        Paginate first
+        """
+        first: Int
+    ): [Post]!
+
+    """
+    Get the categories of tags
+    """
+    tagsCategories: [TagsCategory]!
+
+    """
+    Get the list of advanced settings
+    """
+    advancedSettings: [AdvancedSettings]!
+}
+
+extend type Mutation {
+    """
+    Add new filters to the user's feed
+    """
+    addFiltersToFeed(
+        """
+        The filters to add to the feed
+        """
+        filters: FiltersInput!
+    ): FeedSettings @auth
+
+    """
+    Remove filters from the user's feed
+    """
+    removeFiltersFromFeed(
+        """
+        The filters to remove from the feed
+        """
+        filters: FiltersInput!
+    ): FeedSettings @auth
+
+    """
+    Update user's feed advanced settings
+    """
+    updateFeedAdvancedSettings(
+        """
+        Posts must comply with the advanced settings from this list
+        """
+        settings: [FeedAdvancedSettingsInput]!
+    ): [FeedAdvancedSettings]! @auth
+}

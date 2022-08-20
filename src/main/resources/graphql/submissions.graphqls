@@ -1,0 +1,34 @@
+type SubmissionAvailability {
+    hasAccess: Boolean!
+    limit: Int!
+    todaySubmissionsCount: Int!
+}
+
+type Submission {
+    id: String!
+    url: String!
+    userId: String!
+    createdAt: DateTime!
+    status: String!
+    reason: String
+}
+
+type SubmitArticle {
+    result: String!
+    reason: String
+    post: Post
+    submission: Submission
+}
+
+extend type Query {
+    """
+    Information regarding the access of submitting community links
+    """
+    submissionAvailability: SubmissionAvailability!
+}
+extend type Mutation {
+    """
+    Submit an article to surface on users feed
+    """
+    submitArticle(url: String!): SubmitArticle @auth
+}

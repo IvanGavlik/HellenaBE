@@ -1,0 +1,75 @@
+"""
+The javascript `Date` as string. Type represents date and time as the ISO Date string.
+"""
+scalar DateTime
+
+input ConnectionArgs {
+    """
+    Paginate before opaque cursor
+    """
+    before: String
+
+    """
+    Paginate after opaque cursor
+    """
+    after: String
+
+    """
+    Paginate first
+    """
+    first: Int
+
+    """
+    Paginate last
+    """
+    last: Int
+}
+
+type PageInfo {
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    startCursor: String
+    endCursor: String
+}
+
+"""
+Used for mutations with empty response
+"""
+type EmptyResponse {
+    """
+    Every type must have at least one field
+    """
+    _: Boolean
+}
+
+enum CacheControlScope {
+    PUBLIC
+    PRIVATE
+}
+
+directive @cacheControl(
+    maxAge: Int
+    scope: CacheControlScope
+    inheritMaxAge: Boolean
+) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+
+scalar Upload
+
+
+directive @auth(
+"""
+Roles required for the operation (at least one)
+"""
+requires: [Role] = []
+
+"""
+Whether premium subscription is required
+"""
+premium: Boolean = false
+) on OBJECT | FIELD_DEFINITION
+
+enum Role {
+    MODERATOR
+}
+
+directive @url on INPUT_FIELD_DEFINITION

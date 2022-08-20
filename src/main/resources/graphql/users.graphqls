@@ -1,0 +1,227 @@
+"""
+Registered user
+"""
+type User {
+    """
+    ID of the user
+    """
+    id: String!
+    """
+    Full name of the user
+    """
+    name: String!
+    """
+    Profile image of the user
+    """
+    image: String!
+    """
+    Username (handle) of the user
+    """
+    username: String
+    """
+    URL to the user's profile page
+    """
+    permalink: String!
+    """
+    Bio of the user
+    """
+    bio: String
+    """
+    Twitter handle of the user
+    """
+    twitter: String
+    """
+    Github handle of the user
+    """
+    github: String
+    """
+    Hashnode handle of the user
+    """
+    hashnode: String
+    """
+    Date when the user joined
+    """
+    createdAt: DateTime!
+    """
+    If the user is confirmed
+    """
+    infoConfirmed: Boolean
+}
+
+type TagsReadingStatus {
+    tag: String!
+    readingDays: Int!
+    percentage: Float
+}
+
+type UserStats {
+    numPosts: Int!
+    numComments: Int!
+    numPostViews: Int
+    numPostUpvotes: Int
+    numCommentUpvotes: Int
+}
+
+type ReadingRank {
+    rankThisWeek: Int
+    rankLastWeek: Int
+    currentRank: Int!
+    progressThisWeek: Int
+    readToday: Boolean
+    lastReadTime: DateTime
+    tags: [TagsReadingStatus]
+}
+
+type MostReadTag {
+    value: String!
+    count: Int!
+    percentage: Float
+    total: Int
+}
+
+type ReadingRankHistory {
+    rank: Int!
+    count: Int!
+}
+
+type ReadHistory {
+    date: String!
+    reads: Int!
+}
+
+type SearchReadingHistorySuggestion {
+    title: String!
+}
+
+type SearchReadingHistorySuggestionsResults {
+    query: String!
+    hits: [SearchReadingHistorySuggestion!]!
+}
+
+type DevCard {
+    imageUrl: String!
+}
+
+type ReadingHistory {
+    timestamp: DateTime!
+    timestampDb: DateTime!
+    post: Post!
+}
+
+type ReadingHistoryEdge {
+    node: ReadingHistory!
+
+    """
+    Used in `before` and `after` args
+    """
+    cursor: String!
+}
+
+type ReadingHistoryConnection {
+    pageInfo: PageInfo!
+    edges: [ReadingHistoryEdge]!
+}
+
+extend type Query {
+    """
+    Get user based on logged in session
+    """
+    whoami: User @auth
+    """
+    Get the statistics of the user
+    """
+    userStats(id: ID!): UserStats
+    """
+    Get the reading rank of the user
+    """
+    userReadingRank(id: ID!, version: Int, limit: Int): ReadingRank
+    """
+    Get the most read tags of the user
+    """
+    userMostReadTags(
+        id: ID!
+        after: String
+        before: String
+        limit: Int
+    ): [MostReadTag]
+    """
+    Get the reading rank history of the user.
+    An aggregated count of all the ranks the user ever received.
+    """
+    userReadingRankHistory(
+        id: ID!
+        after: String
+        before: String
+        version: Int
+    ): [ReadingRankHistory]
+    """
+    Get a heatmap of reads per day in a given time frame.
+    """
+    userReadHistory(id: ID!, after: String!, before: String!): [ReadHistory]
+    """
+    Get the number of articles the user read
+    """
+    userReads: Int @auth
+
+    """
+    Get suggestions for search reading history query
+    """
+    searchReadingHistorySuggestions(
+        """
+        The query to search for
+        """
+        query: String!
+    ): SearchReadingHistorySuggestionsResults!
+
+    """
+    Get user's info
+    """
+    user(id: ID!): User
+
+    """
+    Get user's reading history
+    """
+    readHistory(
+        """
+        Paginate after opaque cursor
+        """
+        after: String
+
+        """
+        Paginate first
+        """
+        first: Int
+    ): ReadingHistoryConnection! @auth
+
+    """
+    Search through users reading history
+    """
+    searchReadingHistory(
+        """
+        The query to search for
+        """
+        query: String!
+
+        """
+        Paginate after opaque cursor
+        """
+        after: String
+
+        """
+        Paginate first
+        """
+        first: Int
+    ): ReadingHistoryConnection! @auth
+}
+
+extend type Mutation {
+    """
+    Generates or updates the user's Dev Card preferences
+    """
+    generateDevCard(file: Upload, url: String): DevCard @auth
+
+    """
+    Hide user's read history
+    """
+    hideReadHistory(postId: String!, timestamp: DateTime!): EmptyResponse @auth
+}
